@@ -5,10 +5,10 @@ USE tracker_employee;
 
 CREATE TABLE Department (
     iddepartment INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
+    dep_name VARCHAR(30) NOT NULL,
 );
 
-CREATE TABLE Role(
+CREATE TABLE Roles(
     idrole INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30) NOT NULL,
     salary DECIMAL(8,2),
