@@ -1,5 +1,6 @@
 const mysql = require('mysql'); 
 const inquirer = require('inquirer');
+const Connection = require('mysql2/typings/mysql/lib/Connection');
 
 
 
@@ -21,6 +22,32 @@ connect.connect((err) =>{
         return res.send("There was an error connecting to the database.");
     } console.log("You're Connected!");
 });
+
+let rolesArray = [];
+let deptArray = [];
+let managerArray = [];
+let employeeArray = [];
+
+class Department {
+    constructor(name, id) {
+        this.name = name;
+        this.id = id;
+    }
+};
+
+class Roles {
+    constructor(name, id) {
+        this.name = name;
+        this.id = id;
+    }
+};
+
+class Manager {
+    constructor(name, id) {
+        this.name = name;
+        this.id = id;
+    }
+};
 
 
 // adding prompt 
@@ -48,4 +75,51 @@ const begin = () => {
             addDepartments();
         }
     })
+}
+
+class Emplyoee {
+    constructor(name, id, role, salary, department, manager) {
+        this.name = name;
+        this.id = id;
+        this.role = role;
+        this.salary = salary;
+        this.department = department;
+        this.manager = manager;
+    }
+}
+
+let assignManager = (manager) => {
+if(!manager) {return null;}
+for (i = 0; i < managerArray.length; i++) {
+    if(managerArray[i] === manager) {
+        return managerArray.name;
+    }
+}}
+
+let empName = [];
+
+const viewEmployees = () => {
+    connection.query(
+        'SELECT Employee.idemployee, Employee.first_name, Employee.last_name, Roles.title, Roles.salary, Department.dept_name, Employee.manager_id FROM Employee INNER JOIN Roles ON Employee.idrole = Roles.idrole INNER JOIN department ON Roles.iddepartment = Department.iddepartment',
+        (err, res) => {
+            if(err) throw err;
+            empName = res.map((res) => `${res.first_name} ${res.last_name}`)
+            employeeArray = [];
+            for(i = 0; i < res.length; i++) {
+                let assigned = assignManager(res[i].manager_id);
+                const tempEmployee = new Emplyoee (empName[i], res[i].idemployee, res[i].title, res[i].salary, res[i].dept_name, assigned)
+                employeeArray.push(tempEmployee);
+            }
+            console.table(employeeArray);
+            start();
+        }
+    )
+}
+
+const updateEmployee = () => {
+    inquirer.prompt([
+        {
+            
+        }
+    ])
 }
