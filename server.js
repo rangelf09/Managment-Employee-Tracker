@@ -1,6 +1,6 @@
-const mysql = require('mysql'); 
+const mysql = require('mysql');
 const inquirer = require('inquirer');
-const Connection = require('mysql2/typings/mysql/lib/Connection');
+
 
 
 
@@ -12,15 +12,6 @@ const connect = mysql.createConnection({
     password: 'Rangel24',
     database: 'tracker_employee'
 
-},
-console.log(`connected to the tracker_employee database`)
-);
-connect.connect((err) =>{
-    if(err) {
-        console.log(err);
-        res.status(500);
-        return res.send("There was an error connecting to the database.");
-    } console.log("You're Connected!");
 });
 
 let rolesArray = [];
@@ -52,7 +43,8 @@ class Manager {
 
 // adding prompt 
 const init = () => {
-    inquirer.createPromptModule({
+    inquirer
+    .prompt({
         name: 'startQuestions',
         type: 'list', 
         message: 'What would you like to do?',
@@ -89,7 +81,7 @@ class Emplyoee {
 }
 
 const newManager = () => {
-    connection.query(
+    connect.query(
         "SELECT Employee.first_name, Employee.last_name, Employee.idemployee FROM Employee INNER JOIN Roles ON Roles.idrole = Employee.idrole WHERE role.title =?",['Manager'],
         (err, res) => {
             if (err) throw err;
@@ -140,7 +132,7 @@ const addEmployees = () => {
     ])
     .then((response) => {
         if (response.manager === 0) {
-            connection.query (
+            connect.query (
                 "INSERT INTO Employee SET ?",
                 {
                     first_name: response.fname,
@@ -156,7 +148,7 @@ const addEmployees = () => {
                 }
             )
         } else (
-            connection.query(
+            connect.query(
                  'INSERT INTO Employee SET',
                  {
                     first_name: response.fname,
@@ -177,7 +169,7 @@ const addEmployees = () => {
 let empName = [];
 
 const viewEmployees = () => {
-    connection.query(
+    connect.query(
         'SELECT Employee.idemployee, Employee.first_name, Employee.last_name, Roles.title, Roles.salary, Department.dept_name, Employee.manager_id FROM Employee INNER JOIN Roles ON Employee.idrole = Roles.idrole INNER JOIN department ON Roles.iddepartment = Department.iddepartment',
         (err, res) => {
             if(err) throw err;
@@ -211,7 +203,7 @@ const updateEmployees = () => {
     ])
     .then((response)=>{
         console.log("Employee role has been successufully updated")
-        connection.query(
+        connect.query(
             "UPDATE Employee SET ? WHERE ?",
             [
                 {
@@ -227,7 +219,7 @@ const updateEmployees = () => {
 }
 
 const newRoles = () => {
-    connection.query(
+    connect.query(
         "SELECT * FROM Roles", (err, res) => {
             rolesArray = [];
             if (err) throw err;
@@ -260,7 +252,7 @@ const addRoles = () => {
         },
     ])
     .then ((resopnse) => {
-        connection.query(
+        connect.query(
             'INSERT INTO Roles SET ?',
             {
                 title: resopnse.name, 
@@ -278,7 +270,7 @@ const addRoles = () => {
 }
 
 const viewRoles = () => {
-    connection.query(
+    connect.query(
         'SELECT Roles.title, Roles.salary, Department.dept_name FROM Roles INNER JOIN Department ON Roles.iddepartment = department.iddepartment', (err, res) =>{
             if(err) throw err;
             console.log('--Roles--');
@@ -297,7 +289,7 @@ const addDepartments = () => {
         messgae:"What is the new department name?",
     })
     .then ((response) => {
-        connection.query(
+        connect.query(
             'INSERT INTO Department SET ?',
             {
                 name:response.dept_name
@@ -313,11 +305,11 @@ const addDepartments = () => {
 }
 
 const newDept = () => {
-    connection.query(
+    connect.query(
         'SELECT * FROM Department', (err, res) => {
             deptArray = [];
             if (err) throw err;
-            for (i = 0; i < res.length; i++) {
+            for (i = 0 ; i < res.length; i++) {
                 const depttemp = new Department (res[i].iddepartment, res[i].dept_name)
                 deptArray.push(depttemp)
             }
@@ -327,7 +319,7 @@ const newDept = () => {
 
 
 const viewDepartments = () => {
-    connection.query(
+    connect.query(
         'SELECT name FROM Department', (err, res) => {
             if(err) throw err;
             console.log('--Departments--');
@@ -337,8 +329,10 @@ const viewDepartments = () => {
     )
 }
 
-connection.connect((err) => {
-    if (err) throw err;
-    start();
-
+connect.connect(() => {
+    init()
+    newDept();
+    newRoles();
+    newManager();
+    viewEmployees();
 })

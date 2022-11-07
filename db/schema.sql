@@ -5,9 +5,10 @@ USE tracker_employee;
 
 CREATE TABLE Department (
     iddepartment INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    dept_name VARCHAR(30) NOT NULL,
+    dept_name VARCHAR(30) NOT NULL
 );
 
+USE tracker_employee;
 CREATE TABLE Roles(
     idrole INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30) NOT NULL,
@@ -16,12 +17,13 @@ CREATE TABLE Roles(
     FOREIGN KEY (iddepartment) REFERENCES Department (iddepartment)
 );
 
+USE tracker_employee;
 CREATE TABLE Employee (
     idemployee INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     idrole INT,
     manager_id INT NULL,
-    FOREIGN KEY (idrole) REFERENCES (idrole),
-    FOREIGN KEY (manager_id) REFERENCES employee(idemployee)
-)
+    FOREIGN KEY (idrole) REFERENCES Roles (idrole),
+    FOREIGN KEY (manager_id) REFERENCES Employee(idemployee)
+);
